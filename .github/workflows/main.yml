@@ -1,0 +1,16 @@
+name: Hello World
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  
+ Jobs:
+  hello:
+    runs-on: ubunto-latest
+    steps:
+      - name: Checkout code
+        uses: action / checkout@v3
+        
+             -name : Say Hello
+             run: echo "Hello, GitHub Actions!"
