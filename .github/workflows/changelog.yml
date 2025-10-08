@@ -1,0 +1,41 @@
+name: Update README Changelog
+
+# Gatilho (trigger): Este workflow roda sempre que um push for feito no branch 'main'
+on:
+  push:
+    branches:
+      - main  # Mude para 'master' ou o nome do seu branch principal se for diferente
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # O workflow vai rodar em uma máquina virtual Linux (padrão)
+
+    # Permissões são cruciais para permitir que a Action escreva de volta no seu repositório
+    permissions:
+      contents: write
+
+    steps:
+      # Passo 1: Clona o seu repositório para dentro da máquina virtual do workflow
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Passo 2: Pega a data e a mensagem do último commit e adiciona ao README.md
+      - name: Update README.md
+        run: |
+          # Pega a mensagem completa do último commit
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          # Pega a data atual no formato Ano-Mês-Dia Hora:Minuto
+          COMMIT_DATE=$(date +'%Y-%m-%d %H:%M')
+          # Adiciona a nova linha no final do README.md
+          # Usamos '>>' para anexar, e não sobrescrever o arquivo
+          # A linha começa com um asterisco para criar um item de lista em Markdown
+          echo "* **${COMMIT_DATE}** - ${COMMIT_MSG}" >> README.md
+
+      # Passo 3: Faz o commit e push da alteração no README.md de volta para o GitHub
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          # Mensagem do commit que a Action irá criar
+          commit_message: 'docs: Update changelog in README.md'
+          # Arquivo específico para observar e fazer commit
+          file_pattern: README.md
